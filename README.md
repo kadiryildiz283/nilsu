@@ -1,5 +1,3 @@
----
-
 ## 🚀 Nilsu
 
 **LLM Semantic Context Compiler Daemon (Rust, Zero-Graph MVP)**
@@ -8,8 +6,6 @@ Nilsu, yerel LLM ajanları için tasarlanmış ultra-hafif bir **context extract
 Neovim veya herhangi bir editor içinden gelen imleç bazlı istekleri alır ve Tree-sitter tabanlı minimal AST analizleriyle **token-optimize edilmiş bağlam paketleri (Context Envelope)** üretir.
 
 > “From cursor movement to semantic context in <200ms — without LSP, without graph, without overhead.”
-
----
 
 ## ⚡ Problem
 
