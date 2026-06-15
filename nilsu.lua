@@ -61,11 +61,15 @@ function M.get_context()
             return
           end
 
-          if decoded.status == "ok" and decoded.context_snippet then
+          if decoded.status == "ok" then
             local snippet = decoded.context_snippet
+            if snippet == nil or snippet == vim.NIL then
+              print("[Nilsu] No meaningful AST context found at the cursor position.")
+              return
+            end
             M.show_floating_window(snippet.code_snippet, snippet.start_line, snippet.end_line)
           else
-            print("[Nilsu] No context found or error: " .. (decoded.message or "unknown"))
+            print("[Nilsu] Error: " .. (decoded.message or "unknown"))
           end
         end)
       end
