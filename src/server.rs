@@ -17,11 +17,14 @@ struct ContextRequest {
     cursor_line: usize,
 }
 
+use crate::parser::ParsedContext;
+
 #[derive(Debug, Serialize)]
 struct ContextResponse {
     status: String,
     request_id: String,
     message: String,
+    context_snippet: Option<ParsedContext>,
     latency_ms: u128,
 }
 
@@ -97,12 +100,16 @@ async fn handle_client(mut stream: UnixStream, _permit: OwnedSemaphorePermit, ti
                     req.action, req.file, req.cursor_line
                 );
 
+                // Parse context using tree-sitter
+                let context_snippet = crate::parser::get_context(&req.file, req.cursor_line);
+
                 // V1 Dummy Başarı Yanıtı (UUID üretimi dahil)
                 let latency = start_time.elapsed().as_millis();
                 let response = ContextResponse {
                     status: "ok".to_string(),
                     request_id: Uuid::new_v4().to_string(),
-                    message: "request received".to_string(),
+                    message: if context_snippet.is_some() { "context extracted".to_string() } else { "no context found".to_string() },
+                    context_snippet,
                     latency_ms: latency,
                 };
 
