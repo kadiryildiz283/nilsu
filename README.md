@@ -2,8 +2,8 @@
 
 **LLM Semantic Context Compiler Daemon (Rust, Zero-Graph MVP)**
 
-Nilsu, yerel LLM ajanları için tasarlanmış ultra-hafif bir **context extraction daemon**’dır.
-Neovim veya herhangi bir editor içinden gelen imleç bazlı istekleri alır ve Tree-sitter tabanlı minimal AST analizleriyle **token-optimize edilmiş bağlam paketleri (Context Envelope)** üretir.
+Nilsu is an ultra-lightweight **context extraction daemon** designed for local LLM agents.
+It accepts cursor-based requests coming from Neovim or any other editor and generates **token-optimized context envelopes (Context Envelope)** using minimal AST analysis based on Tree-sitter.
 
 > “From cursor movement to semantic context in <200ms — without LSP, without graph, without overhead.”
 
@@ -11,12 +11,12 @@ Neovim veya herhangi bir editor içinden gelen imleç bazlı istekleri alır ve 
 
 Modern LLM tooling:
 
-* Aşırı ağır LSP bağımlılığı
-* Yavaş context generation
+* Excessively heavy LSP dependency
+* Slow context generation
 * Memory + CPU spikes
 * Unpredictable latency under concurrency
 
-Sonuç:
+Result:
 
 > “Intelligent coding tools that are ironically slow.”
 
@@ -24,12 +24,12 @@ Sonuç:
 
 ## 🧠 Solution
 
-Nilsu, bu problemi radikal şekilde çözer:
+Nilsu radically solves this problem:
 
-* ❌ LSP yok
-* ❌ Graph yok
-* ❌ Background watcher yok (V1)
-* ❌ Stateful cache yok
+* ❌ No LSP
+* ❌ No Graph
+* ❌ No background watcher (V1)
+* ❌ No stateful cache
 
 ✔ On-demand AST parsing
 ✔ Tree-sitter boundary extraction
@@ -141,24 +141,23 @@ It is a **context runtime primitive** for LLM systems.
 
 # 🧪 Benchmark Harness — 1000 Request Stress Test
 
-Bu artık “test script” değil, **OSS güvenilirlik kanıtı**.
+This is no longer a "test script", it is a **proof of OSS reliability**.
 
 ---
 
-## 🎯 Amaç
+## 🎯 Purpose
 
-Sistemin:
+Measuring the system's:
 
-* 1000 concurrent request altında
-* timeout davranışı
-* latency dağılımı
+* timeout behavior
+* latency distribution
 * crash resilience
 
-ölçülmesi.
+under a load of 1000 concurrent requests.
 
 ---
 
-## 🧱 Mimari
+## 🧱 Architecture
 
 ```
 [Load Generator]
@@ -178,7 +177,7 @@ Histogram output
 
 ---
 
-## ⚙️ Test Parametreleri
+## ⚙️ Test Parameters
 
 ```text
 TOTAL_REQUESTS = 1000
@@ -189,7 +188,7 @@ PAYLOAD = random valid JSON requests
 
 ---
 
-## 🧪 Test Senaryoları
+## 🧪 Test Scenarios
 
 ### 1. Baseline load
 
@@ -202,7 +201,7 @@ PAYLOAD = random valid JSON requests
 
 ### 3. Malformed injection
 
-* %10 invalid JSON mixed
+* 10% invalid JSON mixed in
 
 ### 4. Timeout stress
 
@@ -263,7 +262,7 @@ Benchmark PASS if:
 
 ## 🔥 Why this benchmark matters
 
-Bu test şunu kanıtlar:
+This test proves that:
 
 > “Nilsu is not a toy socket server. It is a concurrency-safe runtime primitive.”
 

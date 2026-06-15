@@ -1,0 +1,5 @@
+{
+  "socket_path": "/tmp/nilsu.sock",
+  "max_concurrent_connections": 64,
+  "timeout_ms": 200
+}
