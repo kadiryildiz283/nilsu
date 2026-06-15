@@ -217,6 +217,86 @@ vim.keymap.set('n', '<leader>nc', function() require('nilsu').get_context() end,
 
 ---
 
+## 🤖 AI Pass-through Prompt Wrapper
+
+For integrating with AI agents (e.g. Aider, Copilot, custom LLM agents), you can use the `context_wrapper.lua` module. This module formats the raw AST context snippet from Nilsu into a standardized Markdown system prompt block.
+
+Create `context_wrapper.lua` in your Neovim `lua/` directory (or use the root `context_wrapper.lua` provided in this repository):
+
+```lua
+local M = {}
+
+function M.wrap_context(context_snippet, filepath)
+  if not context_snippet or context_snippet == vim.NIL then
+    return ""
+  end
+
+  local code = context_snippet.code_snippet
+  local start_line = context_snippet.start_line
+  local end_line = context_snippet.end_line
+
+  local template = string.format([=[
+--- CONTEXT START ---
+File: %s
+Lines: %d-%d
+Code:
+```rust
+%s
+```
+--- CONTEXT END ---
+]=], filepath, start_line, end_line, code)
+
+  return template
+end
+
+function M.get_wrapped_context(callback)
+  local nilsu = require("nilsu")
+  local file = vim.api.nvim_buf_get_name(0)
+  local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+
+  if file == "" then
+    callback("Buffer has no file name", nil)
+    return
+  end
+
+  nilsu.query_context(file, cursor_line, function(err, decoded)
+    if err then
+      callback(err, nil)
+      return
+    end
+
+    if decoded.status == "ok" then
+      local snippet = decoded.context_snippet
+      if snippet == nil or snippet == vim.NIL then
+        callback("No meaningful AST context found", nil)
+        return
+      end
+      local wrapped = M.wrap_context(snippet, file)
+      callback(nil, wrapped)
+    else
+      callback(decoded.message or "unknown error", nil)
+    end
+  end)
+end
+
+return M
+```
+
+### Usage:
+You can programmatically query Nilsu and send the standardized prompt template straight to your AI client/agent:
+```lua
+require('context_wrapper').get_wrapped_context(function(err, prompt)
+  if err then
+    print("[Nilsu] Error wrapping context: " .. err)
+    return
+  end
+  -- Send 'prompt' to your AI integration:
+  print("Wrapped Prompt:\n" .. prompt)
+end)
+```
+
+---
+
 ## 🧪 Performance Guarantee (V1 Target)
 
 | Metric        | Target                    |
